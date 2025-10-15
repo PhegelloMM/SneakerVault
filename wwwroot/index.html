@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PG13 — The Sneaker Head | SneakerVault</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg,#667eea 0%,#764ba2 100%); color: #2d3748; min-height: 100vh; }
+    .dash-card { background:white; border-radius:20px; box-shadow:0 20px 60px rgba(0,0,0,0.15); transition:all .3s cubic-bezier(0.4, 0, 0.2, 1); overflow:hidden; }
+    .dash-card:hover { transform:translateY(-8px); box-shadow:0 30px 80px rgba(0,0,0,0.25); }
+    .upload-drop { transition:.3s; border: 2px dashed #e0e7ff; }
+    .upload-drop:hover { transform:translateY(-2px); border-color: #818cf8; background: #f5f3ff; }
+    .stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; padding: 1.5rem; color: white; }
+    .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); transition: all .3s; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4); }
+    .toast { position: fixed; top: 20px; right: 20px; background: white; padding: 1rem 1.5rem; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); z-index: 100; animation: slideIn .3s; }
+    @keyframes slideIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes slideOut { to { transform: translateX(400px); opacity: 0; } }
+    .toast.hide { animation: slideOut .3s forwards; }
+    .sneaker-img { transition: transform .3s; }
+    .sneaker-img:hover { transform: scale(1.05); }
+    .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="glass shadow-lg py-4 px-6 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-500 flex items-center justify-center text-white font-bold text-lg shadow-lg">SV</div>
+        <div>
+          <div class="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">PG13 — The Sneaker Head</div>
+          <div class="text-xs text-gray-500">Your Personal Vault</div>
+        </div>
+      </div>
+      <div class="hidden md:flex items-center space-x-6">
+        <a href="#stats" class="text-gray-600 hover:text-purple-600 font-medium transition">Dashboard</a>
+        <a href="#add" class="text-gray-600 hover:text-purple-600 font-medium transition">Add</a>
+        <a href="#collection" class="text-gray-600 hover:text-purple-600 font-medium transition">My Rack</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="max-w-7xl mx-auto px-6 py-8">
+    
+    <!-- STATS DASHBOARD -->
+    <section id="stats" class="mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="stat-card">
+          <div class="text-sm opacity-90">Total Sneakers</div>
+          <div id="totalCount" class="text-3xl font-bold mt-1">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="text-sm opacity-90">Owned</div>
+          <div id="ownedCount" class="text-3xl font-bold mt-1">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="text-sm opacity-90">Wishlist</div>
+          <div id="wishlistCount" class="text-3xl font-bold mt-1">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="text-sm opacity-90">Total Value</div>
+          <div id="totalValue" class="text-3xl font-bold mt-1">R0</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HERO + FORM -->
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+      <div>
+        <h1 class="text-5xl font-extrabold mb-4 text-white drop-shadow-lg">Welcome back, sneakerhead 👟</h1>
+        <p class="text-white/90 mb-6 text-lg">Manage your collection with style. Track prices, add photos, and keep your dream kicks organized.</p>
+
+        <div class="dash-card p-6">
+          <h3 class="font-bold text-lg mb-4 flex items-center">
+            <span class="text-2xl mr-2">✨</span> What's New
+          </h3>
+          <ul class="text-sm text-gray-600 space-y-2">
+            <li>🔍 Search your entire collection instantly</li>
+            <li>📊 Sort by price, date, or name</li>
+            <li>🎨 Add colorway details to each sneaker</li>
+            <li>💾 Automatic image compression</li>
+            <li>📱 Better mobile experience</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ADD FORM -->
+      <div id="add" class="dash-card p-6">
+        <h2 class="text-2xl font-bold mb-4 flex items-center">
+          <span class="text-3xl mr-2">➕</span> Add New Sneaker
+        </h2>
+
+        <form id="sneakerForm" class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Sneaker Name *</label>
+            <input id="name" type="text" required class="w-full px-4 py-2 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-transparent" placeholder="Air Jordan 1 Retro High">
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1">Brand</label>
+              <input id="brand" type="text" class="w-full px-4 py-2 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-purple-300" placeholder="Nike">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1">Colorway</label>
+              <input id="colorway" type="text" class="w-full px-4 py-2 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-purple-300" placeholder="Bred">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1">Price (ZAR)</label>
+              <input id="price" type="number" min="0" class="w-full px-4 py-2 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-purple-300" placeholder="1500">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1">Status *</label>
+              <select id="status" class="w-full px-4 py-2 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-purple-300">
+                <option>Owned</option>
+                <option>Wishlist</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Photos</label>
+            <div id="dropZone" class="upload-drop relative rounded-xl p-8 text-center bg-purple-50 cursor-pointer">
+              <input id="filesInput" type="file" accept="image/*" multiple class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+              <div class="pointer-events-none">
+                <p class="text-gray-700 font-medium">📸 Drag & drop or click to select</p>
+                <p class="text-xs text-gray-500 mt-2">PNG, JPG up to 10 images</p>
+              </div>
+            </div>
+            <div id="thumbs" class="grid grid-cols-4 gap-2 mt-3"></div>
+          </div>
+
+          <div class="flex space-x-3 pt-2">
+            <button type="submit" class="flex-1 btn-primary text-white py-3 rounded-xl font-bold shadow-lg">Save Sneaker</button>
+            <button type="button" id="clearForm" class="px-6 py-3 rounded-xl border-2 font-semibold hover:bg-gray-50">Clear</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- COLLECTION CONTROLS -->
+    <section id="collection" class="mb-6">
+      <div class="dash-card p-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+          <h2 class="text-3xl font-bold">My Rack</h2>
+          
+          <div class="flex flex-wrap items-center gap-3">
+            <input id="searchBox" type="text" placeholder="🔍 Search sneakers..." class="px-4 py-2 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-purple-300 w-64">
+            
+            <select id="sortBy" class="px-4 py-2 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-purple-300">
+              <option value="date-desc">Newest First</option>
+              <option value="date-asc">Oldest First</option>
+              <option value="price-desc">Highest Price</option>
+              <option value="price-asc">Lowest Price</option>
+              <option value="name-asc">Name A-Z</option>
+              <option value="name-desc">Name Z-A</option>
+            </select>
+            
+            <select id="filterStatus" class="px-4 py-2 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-purple-300">
+              <option value="all">All Status</option>
+              <option value="Owned">Owned</option>
+              <option value="Wishlist">Wishlist</option>
+            </select>
+            
+            <button id="exportBtn" class="px-4 py-2 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold hover:shadow-lg transition">Export JSON</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GRID -->
+    <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16"></div>
+  </main>
+
+  <!-- EDIT MODAL -->
+  <div id="editModal" class="fixed inset-0 hidden items-center justify-center bg-black/60 z-50 p-4">
+    <div class="glass rounded-2xl p-6 max-w-lg w-full shadow-2xl">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-2xl font-bold">Edit Sneaker</h3>
+        <button id="closeEditModal" class="text-gray-600 hover:text-gray-800 text-2xl">&times;</button>
+      </div>
+      
+      <form id="editForm" class="space-y-4">
+        <input type="hidden" id="editId">
+        
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Sneaker Name</label>
+          <input id="editName" type="text" required class="w-full px-4 py-2 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-purple-300">
+        </div>
+        
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Brand</label>
+            <input id="editBrand" type="text" class="w-full px-4 py-2 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-purple-300">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Colorway</label>
+            <input id="editColorway" type="text" class="w-full px-4 py-2 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-purple-300">
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Price (ZAR)</label>
+            <input id="editPrice" type="number" min="0" class="w-full px-4 py-2 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-purple-300">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Status</label>
+            <select id="editStatus" class="w-full px-4 py-2 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-purple-300">
+              <option>Owned</option>
+              <option>Wishlist</option>
+            </select>
+          </div>
+        </div>
+        
+        <button type="submit" class="w-full btn-primary text-white py-3 rounded-xl font-bold shadow-lg">Save Changes</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- IMAGE MODAL -->
+  <div id="modal" class="fixed inset-0 hidden items-center justify-center bg-black/80 z-50 p-4">
+    <div class="glass rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-start mb-4">
+        <h3 id="modalTitle" class="text-2xl font-bold"></h3>
+        <button id="closeModal" class="text-gray-600 hover:text-gray-800 text-2xl">&times;</button>
+      </div>
+      <div id="modalImgs" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </div>
+  </div>
+
+<script>
+// IndexedDB setup
+const DB_NAME = 'sneakervault';
+const STORE = 'sneakers';
+let db = null;
+
+function openDB() {
+  return new Promise((res, rej) => {
+    const rq = indexedDB.open(DB_NAME, 1);
+    rq.onupgradeneeded = (e) => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains(STORE)) {
+        d.createObjectStore(STORE, { keyPath: 'id', autoIncrement: true });
+      }
+    };
+    rq.onsuccess = (e) => { db = e.target.result; res(); };
+    rq.onerror = (e) => rej(e);
+  });
+}
+
+function addSneaker(obj) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction(STORE, 'readwrite');
+    const store = tx.objectStore(STORE);
+    const rq = store.add(obj);
+    rq.onsuccess = () => res(rq.result);
+    rq.onerror = () => rej(rq.error);
+  });
+}
+
+function getAllSneakers() {
+  return new Promise((res, rej) => {
+    const tx = db.transaction(STORE, 'readonly');
+    const store = tx.objectStore(STORE);
+    const rq = store.getAll();
+    rq.onsuccess = () => res(rq.result);
+    rq.onerror = () => rej(rq.error);
+  });
+}
+
+function deleteSneaker(id) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction(STORE, 'readwrite');
+    const store = tx.objectStore(STORE);
+    const rq = store.delete(id);
+    rq.onsuccess = () => res();
+    rq.onerror = () => rej(rq.error);
+  });
+}
+
+function updateSneaker(item) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction(STORE, 'readwrite');
+    const store = tx.objectStore(STORE);
+    const rq = store.put(item);
+    rq.onsuccess = () => res();
+    rq.onerror = () => rej(rq.error);
+  });
+}
+
+// Image compression
+function compressImage(file, maxWidth = 800) {
+  return new Promise((res) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        res(canvas.toDataURL('image/jpeg', 0.8));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// Toast notifications
+function showToast(message, type = 'success') {
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  const emoji = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+  toast.innerHTML = `<div class="flex items-center space-x-3"><span class="text-2xl">${emoji}</span><span class="font-semibold">${message}</span></div>`;
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    toast.classList.add('hide');
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+// UI Elements
+const form = document.getElementById('sneakerForm');
+const filesInput = document.getElementById('filesInput');
+const thumbs = document.getElementById('thumbs');
+const grid = document.getElementById('grid');
+const dropZone = document.getElementById('dropZone');
+const filter = document.getElementById('filterStatus');
+const sortBy = document.getElementById('sortBy');
+const searchBox = document.getElementById('searchBox');
+const exportBtn = document.getElementById('exportBtn');
+
+let selectedFiles = [];
+
+// File handling
+filesInput.addEventListener('change', async (e) => {
+  selectedFiles = Array.from(e.target.files);
+  await renderThumbs();
+});
+
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('ring-2','ring-purple-400'); });
+dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('ring-2','ring-purple-400'); });
+dropZone.addEventListener('drop', async (e) => {
+  e.preventDefault();
+  dropZone.classList.remove('ring-2','ring-purple-400');
+  selectedFiles = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+  await renderThumbs();
+});
+
+async function renderThumbs() {
+  thumbs.innerHTML = '';
+  for (let f of selectedFiles.slice(0,10)) {
+    const url = await compressImage(f, 200);
+    const div = document.createElement('div');
+    div.className = 'relative';
+    div.innerHTML = `
+      <img src="${url}" class="w-full h-20 object-cover rounded-lg shadow-sm">
+      <button type="button" class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-xs font-bold" onclick="removeThumb(${selectedFiles.indexOf(f)})">×</button>
+    `;
+    thumbs.appendChild(div);
+  }
+}
+
+window.removeThumb = (index) => {
+  selectedFiles.splice(index, 1);
+  renderThumbs();
+};
+
+// Form submission
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const name = document.getElementById('name').value.trim();
+  const brand = document.getElementById('brand').value.trim();
+  const colorway = document.getElementById('colorway').value.trim();
+  const price = Number(document.getElementById('price').value) || 0;
+  const status = document.getElementById('status').value;
+  
+  const images = [];
+  for (let f of selectedFiles) {
+    if (f.type.startsWith('image/')) {
+      images.push(await compressImage(f));
+    }
+  }
+
+  const sneaker = { name, brand, colorway, price, status, images, createdAt: new Date().toISOString() };
+  await addSneaker(sneaker);
+  form.reset();
+  selectedFiles = [];
+  thumbs.innerHTML = '';
+  await refreshGrid();
+  showToast('Sneaker added successfully!');
+});
+
+// Update stats
+async function updateStats() {
+  const all = await getAllSneakers();
+  const owned = all.filter(s => s.status === 'Owned');
+  const wishlist = all.filter(s => s.status === 'Wishlist');
+  const totalValue = owned.reduce((sum, s) => sum + (s.price || 0), 0);
+  
+  document.getElementById('totalCount').textContent = all.length;
+  document.getElementById('ownedCount').textContent = owned.length;
+  document.getElementById('wishlistCount').textContent = wishlist.length;
+  document.getElementById('totalValue').textContent = `R${totalValue.toLocaleString()}`;
+}
+
+// Refresh grid with filters and search
+async function refreshGrid() {
+  await updateStats();
+  
+  let all = await getAllSneakers();
+  const filterVal = filter.value;
+  const sortVal = sortBy.value;
+  const searchVal = searchBox.value.toLowerCase().trim();
+  
+  // Filter by status
+  if (filterVal !== 'all') {
+    all = all.filter(x => x.status === filterVal);
+  }
+  
+  // Search
+  if (searchVal) {
+    all = all.filter(s => 
+      s.name.toLowerCase().includes(searchVal) || 
+      (s.brand && s.brand.toLowerCase().includes(searchVal)) ||
+      (s.colorway && s.colorway.toLowerCase().includes(searchVal))
+    );
+  }
+  
+  // Sort
+  all.sort((a, b) => {
+    switch(sortVal) {
+      case 'date-desc': return new Date(b.createdAt) - new Date(a.createdAt);
+      case 'date-asc': return new Date(a.createdAt) - new Date(b.createdAt);
+      case 'price-desc': return (b.price || 0) - (a.price || 0);
+      case 'price-asc': return (a.price || 0) - (b.price || 0);
+      case 'name-asc': return a.name.localeCompare(b.name);
+      case 'name-desc': return b.name.localeCompare(a.name);
+      default: return 0;
+    }
+  });
+  
+  grid.innerHTML = '';
+  
+  if (!all.length) {
+    grid.innerHTML = `
+      <div class="col-span-full text-center py-16">
+        <div class="text-6xl mb-4">👟</div>
+        <div class="text-2xl font-bold text-white mb-2">No sneakers found</div>
+        <div class="text-white/80">Add your first pair to get started!</div>
+      </div>
+    `;
+    return;
+  }
+  
+  for (let s of all) {
+    const card = document.createElement('div');
+    card.className = 'dash-card overflow-hidden';
+    
+    const mainImg = (s.images && s.images.length) ? s.images[0] : '';
+    const imgCount = (s.images && s.images.length) ? s.images.length : 0;
+    
+    card.innerHTML = `
+      <div class="relative">
+        ${mainImg ? `
+          <img src="${mainImg}" class="w-full h-48 object-cover sneaker-img cursor-pointer" data-id="${s.id}">
+          ${imgCount > 1 ? `<div class="absolute top-3 right-3 bg-black/70 text-white px-2 py-1 rounded-lg text-xs font-bold">+${imgCount - 1}</div>` : ''}
+        ` : `<div class="w-full h-48 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-400 text-4xl">👟</div>`}
+      </div>
+      
+      <div class="p-5">
+        <div class="flex justify-between items-start mb-3">
+          <div class="flex-1">
+            <div class="text-xs text-gray-500 mb-1">${s.brand || 'No Brand'}</div>
+            <div class="font-bold text-lg leading-tight mb-1">${s.name}</div>
+            ${s.colorway ? `<div class="text-xs text-purple-600 font-medium">${s.colorway}</div>` : ''}
+          </div>
+          <div class="text-right ml-2">
+            <div class="font-bold text-lg text-purple-600">R${(s.price || 0).toLocaleString()}</div>
+            <div class="mt-1 text-xs px-3 py-1 rounded-full font-semibold ${s.status==='Owned' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}">${s.status}</div>
+          </div>
+        </div>
+        
+        <div class="flex justify-between items-center pt-3 border-t">
+          <div class="text-xs text-gray-400">${new Date(s.createdAt).toLocaleDateString()}</div>
+          <div class="flex space-x-2">
+            <button class="editBtn px-3 py-1 rounded-lg bg-purple-100 text-purple-700 font-semibold text-sm hover:bg-purple-200 transition" data-id="${s.id}">Edit</button>
+            <button class="deleteBtn px-3 py-1 rounded-lg bg-red-100 text-red-700 font-semibold text-sm hover:bg-red-200 transition" data-id="${s.id}">Delete</button>
+          </div>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  }
+
+  // Event handlers
+  grid.querySelectorAll('img[data-id]').forEach(img => {
+    img.addEventListener('click', (e) => openModalWithImages(Number(e.target.dataset.id)));
+  });
+  
+  grid.querySelectorAll('.deleteBtn').forEach(b => {
+    b.addEventListener('click', async (e) => {
+      const id = Number(e.target.dataset.id);
+      if (confirm('Delete this sneaker permanently?')) {
+        await deleteSneaker(id);
+        await refreshGrid();
+        showToast('Sneaker deleted');
+      }
+    });
+  });
+  
+  grid.querySelectorAll('.editBtn').forEach(b => {
+    b.addEventListener('click', async (e) => {
+      const id = Number(e.target.dataset.id);
+      await openEditModal(id);
+    });
+  });
+}
+
+// Image modal
+const modal = document.getElementById('modal');
+const modalTitle = document.getElementById('modalTitle');
+const modalImgs = document.getElementById('modalImgs');
+document.getElementById('closeModal').addEventListener('click', () => modal.classList.add('hidden'));
+
+async function openModalWithImages(id) {
+  const all = await getAllSneakers();
+  const s = all.find(x => x.id === id);
+  if (!s) return;
+  
+  modalTitle.textContent = `${s.brand || ''} ${s.name}${s.colorway ? ' - ' + s.colorway : ''}`;
+  modalImgs.innerHTML = '';
+  
+  if (s.images && s.images.length) {
+    for (let img of s.images) {
+      const el = document.createElement('img');
+      el.src = img;
+      el.className = 'w-full object-contain rounded-xl shadow-lg';
+      modalImgs.appendChild(el);
+    }
+  } else {
+    modalImgs.innerHTML = '<div class="text-gray-500 text-center py-8">No images available</div>';
+  }
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
+
+// Edit modal
+const editModal = document.getElementById('editModal');
+const editForm = document.getElementById('editForm');
+document.getElementById('closeEditModal').addEventListener('click', () => {
+  editModal.classList.add('hidden');
+  editModal.classList.remove('flex');
+});
+
+async function openEditModal(id) {
+  const all = await getAllSneakers();
+  const s = all.find(x => x.id === id);
+  if (!s) return;
+  
+  document.getElementById('editId').value = s.id;
+  document.getElementById('editName').value = s.name;
+  document.getElementById('editBrand').value = s.brand || '';
+  document.getElementById('editColorway').value = s.colorway || '';
+  document.getElementById('editPrice').value = s.price || 0;
+  document.getElementById('editStatus').value = s.status;
+  
+  editModal.classList.remove('hidden');
+  editModal.classList.add('flex');
+}
+
+editForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const id = Number(document.getElementById('editId').value);
+  const all = await getAllSneakers();
+  const s = all.find(x => x.id === id);
+  if (!s) return;
+  
+  s.name = document.getElementById('editName').value.trim();
+  s.brand = document.getElementById('editBrand').value.trim();
+  s.colorway = document.getElementById('editColorway').value.trim();
+  s.price = Number(document.getElementById('editPrice').value) || 0;
+  s.status = document.getElementById('editStatus').value;
+  
+  await updateSneaker(s);
+  editModal.classList.add('hidden');
+  editModal.classList.remove('flex');
+  await refreshGrid();
+  showToast('Sneaker updated successfully!');
+});
+
+// Export
+exportBtn.addEventListener('click', async () => {
+  const all = await getAllSneakers();
+  const blob = new Blob([JSON.stringify(all, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `sneakervault-${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  showToast('Collection exported!', 'info');
+});
+
+// Filters & search
+filter.addEventListener('change', refreshGrid);
+sortBy.addEventListener('change', refreshGrid);
+searchBox.addEventListener('input', refreshGrid);
+
+// Clear form
+document.getElementById('clearForm').addEventListener('click', () => {
+  form.reset();
+  selectedFiles = [];
+  thumbs.innerHTML = '';
+});
+
+// Close modals on outside click
+modal.addEventListener('click', (e) => {
+  if (e.target === modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+});
+
+editModal.addEventListener('click', (e) => {
+  if (e.target === editModal) {
+    editModal.classList.add('hidden');
+    editModal.classList.remove('flex');
+  }
+});
+
+// Initialize
+(async () => {
+  await openDB();
+  await refreshGrid();
+})();
+</script>
+</body>
+</html>

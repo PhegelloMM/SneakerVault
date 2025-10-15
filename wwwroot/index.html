@@ -6,8 +6,14 @@
   <title>PG13 — The Sneaker Head | SneakerVault</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
   <style>
-    body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg,#667eea 0%,#764ba2 100%); color: #2d3748; min-height: 100vh; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg,#667eea 0%,#764ba2 100%); color: #2d3748; min-height: 100vh; transition: all 0.3s; }
+    body.dark { background: linear-gradient(135deg,#1a1a2e 0%,#16213e 100%); color: #e0e0e0; }
+    body.dark .glass { background: rgba(30, 30, 50, 0.95); color: #e0e0e0; }
+    body.dark .dash-card { background: #1e1e30; color: #e0e0e0; }
+    body.dark .text-gray-700, body.dark .text-gray-600, body.dark .text-gray-500 { color: #b0b0b0 !important; }
     .dash-card { background:white; border-radius:20px; box-shadow:0 20px 60px rgba(0,0,0,0.15); transition:all .3s cubic-bezier(0.4, 0, 0.2, 1); overflow:hidden; }
     .dash-card:hover { transform:translateY(-8px); box-shadow:0 30px 80px rgba(0,0,0,0.25); }
     .upload-drop { transition:.3s; border: 2px dashed #e0e7ff; }
@@ -21,25 +27,49 @@
     .toast.hide { animation: slideOut .3s forwards; }
     .sneaker-img { transition: transform .3s; }
     .sneaker-img:hover { transform: scale(1.05); }
-    .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+    .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); transition: all 0.3s; }
+    
+    /* Animated Nav Links */
+    .nav-link { position: relative; transition: color .3s; }
+    .nav-link::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: linear-gradient(90deg, #667eea, #764ba2); transition: width .3s ease; }
+    .nav-link:hover::after { width: 100%; }
+    .nav-link:hover { color: #667eea; }
+    
+    /* Floating Animation */
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    .float { animation: float 3s ease-in-out infinite; }
+    
+    /* Social Icons */
+    .social-icon { transition: all .3s; }
+    .social-icon:hover { transform: translateY(-5px) scale(1.1); }
+    
+    /* Splash Screen */
+    #splash { transition: opacity 0.8s ease-out; }
   </style>
 </head>
 <body>
 
-  <!-- NAV -->
-  <nav class="glass shadow-lg py-4 px-6 sticky top-0 z-40">
+  <!-- SPLASH SCREEN -->
+  <div id="splash" class="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-purple-600 to-pink-500 text-white text-6xl font-bold z-50">
+    <div class="float">SV</div>
+  </div>
+
+  <!-- ANIMATED NAV -->
+  <nav class="glass shadow-lg py-5 px-6 sticky top-0 z-40">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
       <div class="flex items-center space-x-3">
-        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-500 flex items-center justify-center text-white font-bold text-lg shadow-lg">SV</div>
+        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-500 flex items-center justify-center text-white font-bold text-lg shadow-lg float">SV</div>
         <div>
           <div class="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">PG13 — The Sneaker Head</div>
           <div class="text-xs text-gray-500">Your Personal Vault</div>
         </div>
       </div>
-      <div class="hidden md:flex items-center space-x-6">
-        <a href="#stats" class="text-gray-600 hover:text-purple-600 font-medium transition">Dashboard</a>
-        <a href="#add" class="text-gray-600 hover:text-purple-600 font-medium transition">Add</a>
-        <a href="#collection" class="text-gray-600 hover:text-purple-600 font-medium transition">My Rack</a>
+      <div class="hidden md:flex items-center space-x-8">
+        <a href="#stats" class="nav-link text-gray-700 font-semibold">Dashboard</a>
+        <a href="#why" class="nav-link text-gray-700 font-semibold">My Story</a>
+        <a href="#add" class="nav-link text-gray-700 font-semibold">Add</a>
+        <a href="#collection" class="nav-link text-gray-700 font-semibold">My Rack</a>
+        <button id="darkToggle" class="text-white bg-black/30 px-3 py-2 rounded-xl hover:bg-black/50 transition">🌙</button>
       </div>
     </div>
   </nav>
@@ -48,7 +78,7 @@
   <main class="max-w-7xl mx-auto px-6 py-8">
     
     <!-- STATS DASHBOARD -->
-    <section id="stats" class="mb-8">
+    <section id="stats" class="mb-8" data-aos="fade-up">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div class="stat-card">
           <div class="text-sm opacity-90">Total Sneakers</div>
@@ -69,9 +99,22 @@
       </div>
     </section>
 
+    <!-- WHY I BUILT THIS -->
+    <section id="why" class="mb-12" data-aos="fade-up">
+      <div class="dash-card p-8">
+        <h2 class="text-3xl font-bold mb-4 flex items-center">
+          <span class="text-4xl mr-3">💭</span> Why I Built SneakerVault
+        </h2>
+        <div class="text-gray-700 leading-relaxed space-y-4">
+          <p>I've always been a huge sneakerhead — I love the stories behind every pair and the confidence they bring when you wear them. Over time, my collection started growing, and I wanted a fun, digital way to track my sneakers — both the ones I already own and the ones I dream of adding to my rack 👟✨</p>
+          <p>That's how SneakerVault was born. It's more than just an app; it's a space where I can visualize my sneaker journey, stay organized, and celebrate my passion for sneakers while learning and improving my coding skills 💜</p>
+        </div>
+      </div>
+    </section>
+
     <!-- HERO + FORM -->
     <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-      <div>
+      <div data-aos="fade-right">
         <h1 class="text-5xl font-extrabold mb-4 text-white drop-shadow-lg">Welcome back, sneakerhead 👟</h1>
         <p class="text-white/90 mb-6 text-lg">Manage your collection with style. Track prices, add photos, and keep your dream kicks organized.</p>
 
@@ -80,17 +123,18 @@
             <span class="text-2xl mr-2">✨</span> What's New
           </h3>
           <ul class="text-sm text-gray-600 space-y-2">
+            <li>📝 Add personal notes and memories for each sneaker</li>
             <li>🔍 Search your entire collection instantly</li>
-            <li>📊 Sort by price, date, or name</li>
+            <li>📊 Visualize your collection with charts</li>
             <li>🎨 Add colorway details to each sneaker</li>
+            <li>🌙 Dark mode for night browsing</li>
             <li>💾 Automatic image compression</li>
-            <li>📱 Better mobile experience</li>
           </ul>
         </div>
       </div>
 
       <!-- ADD FORM -->
-      <div id="add" class="dash-card p-6">
+      <div id="add" class="dash-card p-6" data-aos="fade-left">
         <h2 class="text-2xl font-bold mb-4 flex items-center">
           <span class="text-3xl mr-2">➕</span> Add New Sneaker
         </h2>
@@ -127,6 +171,11 @@
           </div>
 
           <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Personal Notes</label>
+            <textarea id="notes" rows="3" class="w-full px-4 py-2 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-purple-300 resize-none" placeholder="Where did you get these? Any special memories? Why do you want them?"></textarea>
+          </div>
+
+          <div>
             <label class="block text-sm font-semibold text-gray-700 mb-2">Photos</label>
             <div id="dropZone" class="upload-drop relative rounded-xl p-8 text-center bg-purple-50 cursor-pointer">
               <input id="filesInput" type="file" accept="image/*" multiple class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
@@ -147,7 +196,7 @@
     </section>
 
     <!-- COLLECTION CONTROLS -->
-    <section id="collection" class="mb-6">
+    <section id="collection" class="mb-6" data-aos="fade-up">
       <div class="dash-card p-6">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
           <h2 class="text-3xl font-bold">My Rack</h2>
@@ -177,12 +226,53 @@
     </section>
 
     <!-- GRID -->
-    <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16"></div>
+    <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"></div>
+    
+    <!-- CHART SECTION -->
+    <section class="mb-16" data-aos="fade-up">
+      <div class="dash-card p-6 max-w-md mx-auto">
+        <h3 class="font-bold text-xl mb-4 text-center">Collection Overview</h3>
+        <div style="max-width: 300px; margin: 0 auto;">
+          <canvas id="sneakerChart"></canvas>
+        </div>
+      </div>
+    </section>
   </main>
+
+  <!-- FOOTER -->
+  <footer class="glass mt-16 py-8 px-6" data-aos="fade-up">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
+        <div class="text-center md:text-left">
+          <div class="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent mb-2">SneakerVault</div>
+          <div class="text-sm text-gray-600">Designed & Built by <span class="font-bold text-purple-600">Phegello "PG13" Molefe</span></div>
+          <div class="text-xs text-gray-500 mt-1">© 2025 • Made with 💜 for sneakerheads</div>
+        </div>
+        
+        <div>
+          <div class="text-sm font-semibold text-gray-700 mb-3 text-center">Connect with me</div>
+          <div class="flex space-x-4 justify-center">
+            <a href="https://twitter.com/pg13" target="_blank" class="social-icon w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white shadow-lg">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"></path></svg>
+            </a>
+            <a href="https://instagram.com/pg13" target="_blank" class="social-icon w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center text-white shadow-lg">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            </a>
+            <a href="https://github.com/pg13" target="_blank" class="social-icon w-12 h-12 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white shadow-lg">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+            </a>
+            <a href="https://linkedin.com/in/pg13" target="_blank" class="social-icon w-12 h-12 rounded-full bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center text-white shadow-lg">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
 
   <!-- EDIT MODAL -->
   <div id="editModal" class="fixed inset-0 hidden items-center justify-center bg-black/60 z-50 p-4">
-    <div class="glass rounded-2xl p-6 max-w-lg w-full shadow-2xl">
+    <div class="glass rounded-2xl p-6 max-w-lg w-full shadow-2xl max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center mb-4">
         <h3 class="text-2xl font-bold">Edit Sneaker</h3>
         <button id="closeEditModal" class="text-gray-600 hover:text-gray-800 text-2xl">&times;</button>
@@ -220,6 +310,11 @@
             </select>
           </div>
         </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1">Personal Notes</label>
+          <textarea id="editNotes" rows="3" class="w-full px-4 py-2 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-purple-300 resize-none"></textarea>
+        </div>
         
         <button type="submit" class="w-full btn-primary text-white py-3 rounded-xl font-bold shadow-lg">Save Changes</button>
       </form>
@@ -230,18 +325,51 @@
   <div id="modal" class="fixed inset-0 hidden items-center justify-center bg-black/80 z-50 p-4">
     <div class="glass rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-start mb-4">
-        <h3 id="modalTitle" class="text-2xl font-bold"></h3>
+        <div>
+          <h3 id="modalTitle" class="text-2xl font-bold mb-2"></h3>
+          <p id="modalNotes" class="text-sm text-gray-600 italic"></p>
+        </div>
         <button id="closeModal" class="text-gray-600 hover:text-gray-800 text-2xl">&times;</button>
       </div>
       <div id="modalImgs" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
     </div>
   </div>
 
+<script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.0/dist/vanilla-tilt.min.js"></script>
+
 <script>
+// Initialize AOS
+AOS.init({ duration: 1000, once: true });
+
+// Splash Screen
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('splash').classList.add('opacity-0', 'pointer-events-none');
+    setTimeout(() => document.getElementById('splash').remove(), 800);
+  }, 1000);
+});
+
+// Dark Mode Toggle
+const darkToggle = document.getElementById('darkToggle');
+darkToggle.addEventListener('click', () => {
+  document.body.classList.toggle('dark');
+  darkToggle.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
+  localStorage.setItem('darkMode', document.body.classList.contains('dark'));
+});
+
+// Load dark mode preference
+if (localStorage.getItem('darkMode') === 'true') {
+  document.body.classList.add('dark');
+  darkToggle.textContent = '☀️';
+}
+
 // IndexedDB setup
 const DB_NAME = 'sneakervault';
 const STORE = 'sneakers';
 let db = null;
+let chartInstance = null;
 
 function openDB() {
   return new Promise((res, rej) => {
@@ -326,16 +454,41 @@ function compressImage(file, maxWidth = 800) {
 }
 
 // Toast notifications
-function showToast(message, type = 'success') {
+function showToast(msg, type = 'success') {
   const toast = document.createElement('div');
   toast.className = 'toast';
   const emoji = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
-  toast.innerHTML = `<div class="flex items-center space-x-3"><span class="text-2xl">${emoji}</span><span class="font-semibold">${message}</span></div>`;
+  toast.innerHTML = `<div class="flex items-center space-x-3"><span class="text-2xl">${emoji}</span><span class="font-semibold">${msg}</span></div>`;
   document.body.appendChild(toast);
-  setTimeout(() => {
-    toast.classList.add('hide');
-    setTimeout(() => toast.remove(), 300);
-  }, 3000);
+  setTimeout(() => toast.classList.add('hide'), 2000);
+  setTimeout(() => toast.remove(), 2300);
+}
+
+// Update Chart
+function updateChart(owned, wishlist) {
+  const ctx = document.getElementById('sneakerChart');
+  if (chartInstance) {
+    chartInstance.destroy();
+  }
+  chartInstance = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Owned', 'Wishlist'],
+      datasets: [{
+        data: [owned, wishlist],
+        backgroundColor: ['#667eea', '#764ba2'],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'bottom',
+        }
+      }
+    }
+  });
 }
 
 // UI Elements
@@ -393,6 +546,7 @@ form.addEventListener('submit', async (e) => {
   const colorway = document.getElementById('colorway').value.trim();
   const price = Number(document.getElementById('price').value) || 0;
   const status = document.getElementById('status').value;
+  const notes = document.getElementById('notes').value.trim();
   
   const images = [];
   for (let f of selectedFiles) {
@@ -401,7 +555,7 @@ form.addEventListener('submit', async (e) => {
     }
   }
 
-  const sneaker = { name, brand, colorway, price, status, images, createdAt: new Date().toISOString() };
+  const sneaker = { name, brand, colorway, price, status, notes, images, createdAt: new Date().toISOString() };
   await addSneaker(sneaker);
   form.reset();
   selectedFiles = [];
@@ -421,6 +575,8 @@ async function updateStats() {
   document.getElementById('ownedCount').textContent = owned.length;
   document.getElementById('wishlistCount').textContent = wishlist.length;
   document.getElementById('totalValue').textContent = `R${totalValue.toLocaleString()}`;
+  
+  updateChart(owned.length, wishlist.length);
 }
 
 // Refresh grid with filters and search
@@ -442,7 +598,8 @@ async function refreshGrid() {
     all = all.filter(s => 
       s.name.toLowerCase().includes(searchVal) || 
       (s.brand && s.brand.toLowerCase().includes(searchVal)) ||
-      (s.colorway && s.colorway.toLowerCase().includes(searchVal))
+      (s.colorway && s.colorway.toLowerCase().includes(searchVal)) ||
+      (s.notes && s.notes.toLowerCase().includes(searchVal))
     );
   }
   
@@ -475,6 +632,7 @@ async function refreshGrid() {
   for (let s of all) {
     const card = document.createElement('div');
     card.className = 'dash-card overflow-hidden';
+    card.setAttribute('data-aos', 'fade-up');
     
     const mainImg = (s.images && s.images.length) ? s.images[0] : '';
     const imgCount = (s.images && s.images.length) ? s.images.length : 0;
@@ -500,9 +658,12 @@ async function refreshGrid() {
           </div>
         </div>
         
+        ${s.notes ? `<div class="text-xs text-gray-600 italic mb-3 line-clamp-2">📝 "${s.notes}"</div>` : ''}
+        
         <div class="flex justify-between items-center pt-3 border-t">
           <div class="text-xs text-gray-400">${new Date(s.createdAt).toLocaleDateString()}</div>
           <div class="flex space-x-2">
+            <button class="viewBtn px-3 py-1 rounded-lg bg-blue-100 text-blue-700 font-semibold text-sm hover:bg-blue-200 transition" data-id="${s.id}">View</button>
             <button class="editBtn px-3 py-1 rounded-lg bg-purple-100 text-purple-700 font-semibold text-sm hover:bg-purple-200 transition" data-id="${s.id}">Edit</button>
             <button class="deleteBtn px-3 py-1 rounded-lg bg-red-100 text-red-700 font-semibold text-sm hover:bg-red-200 transition" data-id="${s.id}">Delete</button>
           </div>
@@ -512,9 +673,21 @@ async function refreshGrid() {
     grid.appendChild(card);
   }
 
+  // Initialize Vanilla Tilt on cards
+  VanillaTilt.init(document.querySelectorAll(".dash-card"), {
+    max: 5,
+    speed: 400,
+    glare: true,
+    "max-glare": 0.2,
+  });
+
   // Event handlers
   grid.querySelectorAll('img[data-id]').forEach(img => {
     img.addEventListener('click', (e) => openModalWithImages(Number(e.target.dataset.id)));
+  });
+  
+  grid.querySelectorAll('.viewBtn').forEach(b => {
+    b.addEventListener('click', (e) => openModalWithImages(Number(e.target.dataset.id)));
   });
   
   grid.querySelectorAll('.deleteBtn').forEach(b => {
@@ -539,8 +712,12 @@ async function refreshGrid() {
 // Image modal
 const modal = document.getElementById('modal');
 const modalTitle = document.getElementById('modalTitle');
+const modalNotes = document.getElementById('modalNotes');
 const modalImgs = document.getElementById('modalImgs');
-document.getElementById('closeModal').addEventListener('click', () => modal.classList.add('hidden'));
+document.getElementById('closeModal').addEventListener('click', () => {
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+});
 
 async function openModalWithImages(id) {
   const all = await getAllSneakers();
@@ -548,6 +725,7 @@ async function openModalWithImages(id) {
   if (!s) return;
   
   modalTitle.textContent = `${s.brand || ''} ${s.name}${s.colorway ? ' - ' + s.colorway : ''}`;
+  modalNotes.textContent = s.notes || 'No notes added';
   modalImgs.innerHTML = '';
   
   if (s.images && s.images.length) {
@@ -583,6 +761,7 @@ async function openEditModal(id) {
   document.getElementById('editColorway').value = s.colorway || '';
   document.getElementById('editPrice').value = s.price || 0;
   document.getElementById('editStatus').value = s.status;
+  document.getElementById('editNotes').value = s.notes || '';
   
   editModal.classList.remove('hidden');
   editModal.classList.add('flex');
@@ -601,6 +780,7 @@ editForm.addEventListener('submit', async (e) => {
   s.colorway = document.getElementById('editColorway').value.trim();
   s.price = Number(document.getElementById('editPrice').value) || 0;
   s.status = document.getElementById('editStatus').value;
+  s.notes = document.getElementById('editNotes').value.trim();
   
   await updateSneaker(s);
   editModal.classList.add('hidden');
@@ -649,6 +829,17 @@ editModal.addEventListener('click', (e) => {
     editModal.classList.add('hidden');
     editModal.classList.remove('flex');
   }
+});
+
+// Smooth scroll for nav links
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
 });
 
 // Initialize
